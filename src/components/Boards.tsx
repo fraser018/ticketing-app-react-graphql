@@ -13,7 +13,7 @@ import {
   DELETE_BOARD,
 } from "../queries/mutations";
 import { Tickets } from "./Tickets";
-
+import { styles } from "./styles";
 export interface BoardProps {
   companyId: string;
 }
@@ -31,7 +31,7 @@ export const Boards: React.FunctionComponent<BoardProps> = ({ companyId }) => {
 
   const [
     createBoard,
-    { loading: mutationLoading, error: mutationError },
+    { loading: createBoardLoading, error: createBoardError },
   ] = useMutation<CreateBoardResponse, CreateBoardVariables>(CREATE_BOARD, {
     refetchQueries: () => [
       {
@@ -49,17 +49,6 @@ export const Boards: React.FunctionComponent<BoardProps> = ({ companyId }) => {
       },
     ],
   });
-
-  if (queryLoading) {
-    return <>loading...</>;
-  }
-  if (queryError) {
-    return <>Error</>;
-  }
-
-  if (data === undefined) {
-    throw new Error("unexpected state");
-  }
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -83,45 +72,50 @@ export const Boards: React.FunctionComponent<BoardProps> = ({ companyId }) => {
   };
 
   return (
-    <div style={{ borderColor: "red", borderWidth: 2 }}>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Board Name:
-            <input
-              type="text"
-              value={boardName}
-              onChange={(e) => setBoardName(e.target.value)}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        {data.organisation.boards.map((board) => {
-          return (
-            <div
-              onClick={() => setActiveBoard(board.id)}
-              style={{
-                margin: 50,
-                width: 100,
-                height: 100,
-                backgroundColor: "grey",
-              }}
-            >
-              <div>{board.name}</div>
-              <div onClick={() => handleDelete(board.id)}>Delete</div>
-            </div>
-          );
-        })}
-      </div>
-      <div>
-        {activeBoard ? (
-          <Tickets companyId={companyId} boardId={activeBoard} />
-        ) : null}
-      </div>
-      {mutationLoading && <p>Loading...</p>}
-      {mutationError && <p>Error :( Please try again</p>}
+    <div>
+      {createBoardError || queryError ? <div>An Error has occurred</div> : null}
+      {queryLoading || createBoardLoading ? (
+        <div> Loading Boards... </div>
+      ) : (
+        <div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <label>
+                Board Name:
+                <input
+                  type="text"
+                  value={boardName}
+                  onChange={(e) => setBoardName(e.target.value)}
+                />
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {data?.organisation.boards.map((board) => {
+              return (
+                <div
+                  style={styles.cardContainer}
+                  onClick={() => setActiveBoard(board.id)}
+                >
+                  <div style={styles.cardTitle}>{board.name}</div>
+                  <div
+                    style={styles.cardDelete}
+                    onClick={() => handleDelete(board.id)}
+                  >
+                    Delete
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div>
+            {activeBoard ? (
+              <Tickets companyId={companyId} boardId={activeBoard} />
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

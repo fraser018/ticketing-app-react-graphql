@@ -39,17 +39,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
     ],
   });
 
-  if (queryLoading) {
-    return <>loading...</>;
-  }
-  if (queryError) {
-    return <>Error</>;
-  }
-
-  if (data === undefined) {
-    throw new Error("unexpected state");
-  }
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
     createTicket({
@@ -67,45 +56,58 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
   };
 
   return (
-    <>
-      <div>
-        <h1>{data.board.name}</h1>
-      </div>
-      <div>
-        <h1> Create a new ticket below or pick an existing one:</h1>
-      </div>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Ticket Name:
-            <input
-              type="text"
-              value={ticketName}
-              onChange={(e) => setTicketName(e.target.value)}
-            />
-          </label>
-          <label>
-            Ticket Description:
-            <input
-              type="text"
-              value={ticketDescription}
-              onChange={(e) => setTicketDescription(e.target.value)}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        {data.board.tickets.map((ticket) => {
-          return (
-            <Ticket
-              companyId={companyId}
-              ticketId={ticket.id}
-              boardId={boardId}
-            />
-          );
-        })}
-      </div>
-    </>
+    <div>
+      {creatingTicketError || queryError ? (
+        <div>An Error has occurred</div>
+      ) : null}
+      {queryLoading || creatingTicket ? (
+        <div> Loading Ticket... </div>
+      ) : (
+        <div>
+          <div>
+            <h1>{data?.board.name}</h1>
+          </div>
+          <div>
+            <h1> Create a new ticket below or pick an existing one:</h1>
+          </div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>
+                  Ticket Name:
+                  <input
+                    type="text"
+                    value={ticketName}
+                    onChange={(e) => setTicketName(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Ticket Description:
+                  <input
+                    type="text"
+                    value={ticketDescription}
+                    onChange={(e) => setTicketDescription(e.target.value)}
+                  />
+                </label>
+              </div>
+              <input type="submit" value="Submit" />
+            </form>
+          </div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {data?.board.tickets.map((ticket) => {
+              return (
+                <Ticket
+                  companyId={companyId}
+                  ticketId={ticket.id}
+                  boardId={boardId}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

@@ -1,12 +1,11 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   DeleteTicketVariables,
   DELETE_TICKET,
   EditTicketResponse,
   EditTicketVariables,
   EDIT_TICKET,
-  ticketStatusEnum,
 } from "../queries/mutations";
 import {
   BOARD_QUERY,
@@ -14,6 +13,7 @@ import {
   TicketVariables,
   TICKET_QUERY,
 } from "../queries/queries";
+import { styles } from "./styles";
 
 export interface TicketProps {
   companyId: string;
@@ -92,85 +92,24 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
 
   return (
     <div>
-      {queryTicket || updatingTicket ? (
+      {updatingTicketError || deletingTicketError || queryError ? (
+        <div>An Error has occurred</div>
+      ) : null}
+      {queryTicket || updatingTicket || deletingTicket ? (
         <div> Loading Ticket... </div>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            margin: 20,
-            borderRadius: 10,
-            backgroundColor: "#F1F2EB",
-            height: 400,
-            width: 250,
-          }}
-        >
-          <div
-            style={{
-              margin: 20,
-              padding: 3,
-              borderRadius: 10,
-              backgroundColor: "#D8DAD3",
-              width: 200,
-            }}
-          >
-            {data?.ticket.name}
-          </div>
+        <div style={{ ...styles.cardContainer, height: 400 }}>
+          <div style={styles.cardTitle}>{data?.ticket.name}</div>
 
-          <div
-            style={{
-              flex: 1,
-              padding: 2,
-              margin: 20,
-              borderRadius: 10,
-              backgroundColor: "#D8DAD3",
-              width: 200,
-            }}
-          >
-            {data?.ticket.visible === false ? (
-              <div>{data?.ticket.description}</div>
-            ) : (
-              <div>
-                This information is hidden. Edit ticket to change visibility.
-              </div>
-            )}
+          <div style={styles.cardDescription}>
+            <div>{data?.ticket.description}</div>
           </div>
-          <div
-            style={{
-              margin: 20,
-              padding: 3,
-              borderRadius: 10,
-              backgroundColor: "#D8DAD3",
-              width: 200,
-            }}
-          >
-            {data?.ticket.status}
-          </div>
-          <div
-            style={{
-              alignSelf: "flex-end",
-              padding: 2,
-              margin: 10,
-              borderRadius: 10,
-              backgroundColor: "#A4C2A5",
-              height: 20,
-              width: 60,
-            }}
-            onClick={() => setEditingTicket(true)}
-          >
+          <div style={styles.cardTitle}>{data?.ticket.status}</div>
+          <div style={styles.cardButton} onClick={() => setEditingTicket(true)}>
             Edit
           </div>
           <div
-            style={{
-              alignSelf: "flex-end",
-              padding: 2,
-              margin: 10,
-              borderRadius: 10,
-              backgroundColor: "#A4C2A5",
-              height: 20,
-              width: 60,
-            }}
+            style={styles.cardButton}
             onClick={() => handleDeleteTicket(ticketId)}
           >
             Delete
@@ -178,15 +117,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
         </div>
       )}
       {editingTicket ? (
-        <div
-          style={{
-            margin: 20,
-            borderRadius: 10,
-            backgroundColor: "#A4C2A5",
-            height: 150,
-            width: 250,
-          }}
-        >
+        <div style={styles.cardEditContainer}>
           <form onSubmit={handleSubmit}>
             <div>
               <label>
@@ -223,13 +154,6 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
                   </option>
                 </select>
               </label>
-              <label>Hiddin:</label>
-              <input
-                name="isHidden"
-                type="checkbox"
-                checked={ticketVisible}
-                onChange={(e) => setTicketVisible(!ticketVisible)}
-              />
             </div>
             <input type="submit" value="Submit" />
           </form>
