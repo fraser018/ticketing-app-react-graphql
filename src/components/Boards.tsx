@@ -12,6 +12,7 @@ import {
   DeleteBoardVariables,
   DELETE_BOARD,
 } from "../queries/mutations";
+import { Tickets } from "./Tickets";
 
 export interface BoardProps {
   companyId: string;
@@ -113,6 +114,11 @@ export const Boards: React.FunctionComponent<BoardProps> = ({ companyId }) => {
             </div>
           );
         })}
+      </div>
+      <div>
+        {activeBoard ? (
+          <Tickets companyId={companyId} boardId={activeBoard} />
+        ) : null}
       </div>
       {mutationLoading && <p>Loading...</p>}
       {mutationError && <p>Error :( Please try again</p>}

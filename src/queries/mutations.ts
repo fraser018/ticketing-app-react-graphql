@@ -68,3 +68,51 @@ export const CREATE_TICKET = gql`
     }
   }
 `;
+
+export type CreateTicketResponse = {
+  company: {
+    visible: boolean;
+    description: string;
+    name: string;
+    status: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
+
+export enum ticketStatusEnum {
+  DONE = "DONE",
+  INPROGRESS = "INPROGRESS",
+  TODO = "TODO",
+}
+
+export type CreateTicketVariables = {
+  putTicketOrganisationId: string;
+  putTicketBoardId: string;
+  putTicketInput: {
+    description: string;
+    name: string;
+    visible: boolean;
+    status: ticketStatusEnum;
+  };
+};
+
+export const DELETE_TICKET = gql`
+  mutation Mutations(
+    $deleteTicketOrganisationId: ID!
+    $deleteTicketTicketId: ID!
+  ) {
+    deleteTicket(
+      organisationId: $deleteTicketOrganisationId
+      ticketId: $deleteTicketTicketId
+    ) {
+      id
+    }
+  }
+`;
+
+export type DeleteTicketVariables = {
+  deleteTicketOrganisationId: string;
+  deleteTicketTicketId: string;
+};
