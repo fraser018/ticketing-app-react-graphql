@@ -16,7 +16,8 @@ import { ApolloProvider } from "@apollo/client/react";
 
 //Example API takes an userId as the Authoerization heading.
 //Can create your own userId using the createUser mutation
-const userId = "634ca417-8d0d-47ee-8e9c-6a8ca56241cb";
+const userId = "dd47e22b-c22a-434c-afb3-7bb2a9f2ec23";
+export const companyId = "42cf08df-2dbf-4984-9e81-3210cfe6815a";
 // Create an http link:
 const httpLink = new HttpLink({
   uri:
