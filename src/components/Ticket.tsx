@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DeleteTicketVariables,
   DELETE_TICKET,
+  EditTicketResponse,
+  EditTicketVariables,
+  EDIT_TICKET,
   ticketStatusEnum,
 } from "../queries/mutations";
 import {
@@ -26,13 +29,26 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
   const [editingTicket, setEditingTicket] = useState(false);
   const [ticketDescription, setTicketDescription] = useState("");
   const [ticketName, setTicketName] = useState("");
-  const [ticketVisible, setTicketVisible] = useState(true);
-  const [ticketStatus, setTicketStatus] = useState(ticketStatusEnum.TODO);
+  const [ticketVisible, setTicketVisible] = useState(false);
+  const [ticketStatus, setTicketStatus] = useState("");
+
   const { loading: queryTicket, error: queryError, data } = useQuery<
     TicketResponse,
     TicketVariables
   >(TICKET_QUERY, {
     variables: { ticketOrganisationId: companyId, ticketTicketId: ticketId },
+  });
+
+  const [
+    editTicket,
+    { loading: updatingTicket, error: updatingTicketError },
+  ] = useMutation<EditTicketResponse, EditTicketVariables>(EDIT_TICKET, {
+    refetchQueries: () => [
+      {
+        query: BOARD_QUERY,
+        variables: { boardOrganisationId: companyId, boardBoardId: boardId },
+      },
+    ],
   });
 
   const [
@@ -48,6 +64,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
   });
 
   const handleSubmit = (e: any) => {
+    setEditingTicket(false);
     e.preventDefault();
     editTicket({
       variables: {
@@ -59,6 +76,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
           visible: ticketVisible,
           status: ticketStatus,
         },
+        putTicketTicketId: ticketId,
       },
     });
   };
@@ -74,7 +92,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
 
   return (
     <div>
-      {queryTicket ? (
+      {queryTicket || updatingTicket ? (
         <div> Loading Ticket... </div>
       ) : (
         <div
@@ -99,6 +117,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
           >
             {data?.ticket.name}
           </div>
+
           <div
             style={{
               flex: 1,
@@ -109,9 +128,25 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
               width: 200,
             }}
           >
-            {data?.ticket.description}
+            {data?.ticket.visible === false ? (
+              <div>{data?.ticket.description}</div>
+            ) : (
+              <div>
+                This information is hidden. Edit ticket to change visibility.
+              </div>
+            )}
           </div>
-
+          <div
+            style={{
+              margin: 20,
+              padding: 3,
+              borderRadius: 10,
+              backgroundColor: "#D8DAD3",
+              width: 200,
+            }}
+          >
+            {data?.ticket.status}
+          </div>
           <div
             style={{
               alignSelf: "flex-end",
@@ -145,8 +180,6 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
       {editingTicket ? (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
             margin: 20,
             borderRadius: 10,
             backgroundColor: "#A4C2A5",
@@ -155,22 +188,49 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
           }}
         >
           <form onSubmit={handleSubmit}>
-            <label>
-              Ticket Name:
+            <div>
+              <label>
+                Ticket Name:
+                <input
+                  type="text"
+                  value={ticketName}
+                  onChange={(e) => setTicketName(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Ticket Description:
+                <input
+                  type="text"
+                  value={ticketDescription}
+                  onChange={(e) => setTicketDescription(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Status:
+                <select
+                  defaultValue="TODO"
+                  value={ticketStatus}
+                  onChange={(e) => setTicketStatus(e.target.value)}
+                >
+                  <option value="DONE">Done</option>
+                  <option value="INPROGRESS">In Progrss</option>
+                  <option selected value="TODO">
+                    Todo
+                  </option>
+                </select>
+              </label>
+              <label>Hiddin:</label>
               <input
-                type="text"
-                value={data?.ticket.name}
-                onChange={(e) => setTicketName(e.target.value)}
+                name="isHidden"
+                type="checkbox"
+                checked={ticketVisible}
+                onChange={(e) => setTicketVisible(!ticketVisible)}
               />
-            </label>
-            <label>
-              Ticket Description:
-              <input
-                type="text"
-                value={data?.ticket.description}
-                onChange={(e) => setTicketDescription(e.target.value)}
-              />
-            </label>
+            </div>
             <input type="submit" value="Submit" />
           </form>
         </div>

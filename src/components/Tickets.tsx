@@ -59,6 +59,8 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
         putTicketInput: {
           description: ticketDescription,
           name: ticketName,
+          visible: true,
+          status: "TODO",
         },
       },
     });

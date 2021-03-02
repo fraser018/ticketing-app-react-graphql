@@ -93,6 +93,8 @@ export type CreateTicketVariables = {
   putTicketInput: {
     description: string;
     name: string;
+    visible: boolean;
+    status: string;
   };
 };
 
@@ -158,7 +160,7 @@ export type EditTicketVariables = {
     description: string;
     name: string;
     visible: boolean;
-    status: ticketStatusEnum;
+    status: string;
   };
   putTicketTicketId: string;
 };
