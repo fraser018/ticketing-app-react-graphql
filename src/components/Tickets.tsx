@@ -14,6 +14,7 @@ import {
   BOARD_QUERY,
   OrganisationResponse,
 } from "../queries/queries";
+import { Ticket } from "./Ticket";
 
 export interface TicketProps {
   companyId: string;
@@ -49,18 +50,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
     ],
   });
 
-  const [
-    deleteTicket,
-    { loading: deletingTicket, error: deletingTicketError },
-  ] = useMutation<DeleteTicketVariables>(DELETE_TICKET, {
-    refetchQueries: () => [
-      {
-        query: BOARD_QUERY,
-        variables: { boardOrganisationId: companyId, boardBoardId: boardId },
-      },
-    ],
-  });
-
   if (queryLoading) {
     return <>loading...</>;
   }
@@ -84,15 +73,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
           visible: ticketVisible,
           status: ticketStatus,
         },
-      },
-    });
-  };
-
-  const handleDeleteTicket = (ticketId: string) => {
-    deleteTicket({
-      variables: {
-        deleteTicketOrganisationId: companyId,
-        deleteTicketTicketId: ticketId,
       },
     });
   };
@@ -129,28 +109,24 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
       <div style={{ display: "flex", flexDirection: "row" }}>
         {data.board.tickets.map((ticket) => {
           return (
-            <div
-              style={{
-                margin: 50,
-                width: 100,
-                height: 100,
-                backgroundColor: "grey",
-              }}
-              onClick={() => setActiveTicket(ticket.id)}
-            >
-              <div>
-                {ticket.name}
-                {ticket.description}
-              </div>
-              <div onClick={() => handleDeleteTicket(ticket.id)}>Delete</div>
-            </div>
+            // <div
+            //   style={{
+            //     margin: 50,
+            //     width: 100,
+            //     height: 100,
+            //     backgroundColor: "grey",
+            //   }}
+            //   onClick={() => setActiveTicket(ticket.id)}
+            // >
+
+            // </div>
+            <Ticket
+              companyId={companyId}
+              ticketId={ticket.id}
+              boardId={boardId}
+            />
           );
         })}
-        {/* <div>
-          {activeTicket ? (
-            <Ticket companyId={companyId} boardId={activeTicket} />
-          ) : null}
-        </div> */}
       </div>
     </>
   );

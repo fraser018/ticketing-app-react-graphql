@@ -10,10 +10,9 @@ function App() {
         <h1> Ticket System</h1>
         <h3>Please select a ticketing board.</h3>
       </div>
-      <div style={{ backgroundColor: "red" }}>
+      <div>
         <Boards companyId={companyId} />
       </div>
-      <div style={{ backgroundColor: "red" }}></div>
     </div>
   );
 }

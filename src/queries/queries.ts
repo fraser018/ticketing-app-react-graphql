@@ -108,23 +108,21 @@ export type BoardResponse = {
 export type BoardVariables = {};
 
 export const TICKET_QUERY = gql`
-  query Query($boardOrganisationId: ID!, $boardBoardId: ID!) {
-    board(organisationId: $boardOrganisationId, boardId: $boardBoardId) {
-      tickets {
-        name
-        id
-        description
-        status
-        createdAt
-        updatedAt
-        visible
-      }
+  query Query($ticketOrganisationId: ID!, $ticketTicketId: ID!) {
+    ticket(organisationId: $ticketOrganisationId, ticketId: $ticketTicketId) {
+      id
+      name
+      description
+      visible
+      status
+      createdAt
+      updatedAt
     }
   }
 `;
 
 export type TicketResponse = {
-  tickets: {
+  ticket: {
     name: string;
     id: string;
     description: string;
@@ -136,6 +134,6 @@ export type TicketResponse = {
 };
 
 export type TicketVariables = {
-  boardOrganisationId: string;
-  boardBoardId: string;
+  ticketOrganisationId: string;
+  ticketTicketId: string;
 };
