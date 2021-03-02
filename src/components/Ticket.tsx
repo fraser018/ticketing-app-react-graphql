@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React from "react";
-import { DeleteTicketVariables, DELETE_TICKET } from "../queries/mutations";
+import React, { useState } from "react";
+import {
+  DeleteTicketVariables,
+  DELETE_TICKET,
+  ticketStatusEnum,
+} from "../queries/mutations";
 import {
   BOARD_QUERY,
   TicketResponse,
@@ -19,6 +23,11 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
   ticketId,
   boardId,
 }) => {
+  const [editingTicket, setEditingTicket] = useState(false);
+  const [ticketDescription, setTicketDescription] = useState("");
+  const [ticketName, setTicketName] = useState("");
+  const [ticketVisible, setTicketVisible] = useState(true);
+  const [ticketStatus, setTicketStatus] = useState(ticketStatusEnum.TODO);
   const { loading: queryTicket, error: queryError, data } = useQuery<
     TicketResponse,
     TicketVariables
@@ -38,6 +47,22 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
     ],
   });
 
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    editTicket({
+      variables: {
+        putTicketOrganisationId: companyId,
+        putTicketBoardId: boardId,
+        putTicketInput: {
+          description: ticketDescription,
+          name: ticketName,
+          visible: ticketVisible,
+          status: ticketStatus,
+        },
+      },
+    });
+  };
+
   const handleDeleteTicket = (ticketId: string) => {
     deleteTicket({
       variables: {
@@ -48,7 +73,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
   };
 
   return (
-    <>
+    <div>
       {queryTicket ? (
         <div> Loading Ticket... </div>
       ) : (
@@ -68,7 +93,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
               margin: 20,
               padding: 3,
               borderRadius: 10,
-              backgroundColor: "#A4C2A5",
+              backgroundColor: "#D8DAD3",
               width: 200,
             }}
           >
@@ -80,7 +105,7 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
               padding: 2,
               margin: 20,
               borderRadius: 10,
-              backgroundColor: "#A4C2A5",
+              backgroundColor: "#D8DAD3",
               width: 200,
             }}
           >
@@ -93,7 +118,21 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
               padding: 2,
               margin: 10,
               borderRadius: 10,
-              backgroundColor: "#566246",
+              backgroundColor: "#A4C2A5",
+              height: 20,
+              width: 60,
+            }}
+            onClick={() => setEditingTicket(true)}
+          >
+            Edit
+          </div>
+          <div
+            style={{
+              alignSelf: "flex-end",
+              padding: 2,
+              margin: 10,
+              borderRadius: 10,
+              backgroundColor: "#A4C2A5",
               height: 20,
               width: 60,
             }}
@@ -103,6 +142,39 @@ export const Ticket: React.FunctionComponent<TicketProps> = ({
           </div>
         </div>
       )}
-    </>
+      {editingTicket ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            margin: 20,
+            borderRadius: 10,
+            backgroundColor: "#A4C2A5",
+            height: 150,
+            width: 250,
+          }}
+        >
+          <form onSubmit={handleSubmit}>
+            <label>
+              Ticket Name:
+              <input
+                type="text"
+                value={data?.ticket.name}
+                onChange={(e) => setTicketName(e.target.value)}
+              />
+            </label>
+            <label>
+              Ticket Description:
+              <input
+                type="text"
+                value={data?.ticket.description}
+                onChange={(e) => setTicketDescription(e.target.value)}
+              />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        </div>
+      ) : null}
+    </div>
   );
 };

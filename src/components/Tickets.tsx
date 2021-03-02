@@ -1,19 +1,11 @@
 import React, { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
-  ticketStatusEnum,
   CreateTicketResponse,
   CreateTicketVariables,
   CREATE_TICKET,
-  DeleteTicketVariables,
-  DELETE_TICKET,
 } from "../queries/mutations";
-import {
-  BoardResponse,
-  BoardVariables,
-  BOARD_QUERY,
-  OrganisationResponse,
-} from "../queries/queries";
+import { BoardResponse, BoardVariables, BOARD_QUERY } from "../queries/queries";
 import { Ticket } from "./Ticket";
 
 export interface TicketProps {
@@ -27,9 +19,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
 }) => {
   const [ticketDescription, setTicketDescription] = useState("");
   const [ticketName, setTicketName] = useState("");
-  const [activeTicket, setActiveTicket] = useState("");
-  const [ticketVisible, setTicketVisible] = useState(true);
-  const [ticketStatus, setTicketStatus] = useState(ticketStatusEnum.TODO);
 
   const { loading: queryLoading, error: queryError, data } = useQuery<
     BoardResponse,
@@ -70,8 +59,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
         putTicketInput: {
           description: ticketDescription,
           name: ticketName,
-          visible: ticketVisible,
-          status: ticketStatus,
         },
       },
     });
@@ -109,17 +96,6 @@ export const Tickets: React.FunctionComponent<TicketProps> = ({
       <div style={{ display: "flex", flexDirection: "row" }}>
         {data.board.tickets.map((ticket) => {
           return (
-            // <div
-            //   style={{
-            //     margin: 50,
-            //     width: 100,
-            //     height: 100,
-            //     backgroundColor: "grey",
-            //   }}
-            //   onClick={() => setActiveTicket(ticket.id)}
-            // >
-
-            // </div>
             <Ticket
               companyId={companyId}
               ticketId={ticket.id}
