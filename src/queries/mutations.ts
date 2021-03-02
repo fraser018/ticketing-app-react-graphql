@@ -70,7 +70,7 @@ export const CREATE_TICKET = gql`
 `;
 
 export type CreateTicketResponse = {
-  company: {
+  ticket: {
     visible: boolean;
     description: string;
     name: string;
@@ -93,8 +93,6 @@ export type CreateTicketVariables = {
   putTicketInput: {
     description: string;
     name: string;
-    visible: boolean;
-    status: ticketStatusEnum;
   };
 };
 
@@ -115,4 +113,52 @@ export const DELETE_TICKET = gql`
 export type DeleteTicketVariables = {
   deleteTicketOrganisationId: string;
   deleteTicketTicketId: string;
+};
+
+export const EDIT_TICKET = gql`
+  mutation PutTicketMutations(
+    $putTicketOrganisationId: ID!
+    $putTicketBoardId: ID!
+    $putTicketInput: TicketInput!
+    $putTicketTicketId: ID
+  ) {
+    putTicket(
+      organisationId: $putTicketOrganisationId
+      boardId: $putTicketBoardId
+      input: $putTicketInput
+      ticketId: $putTicketTicketId
+    ) {
+      visible
+      description
+      name
+      status
+      id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export type EditTicketResponse = {
+  ticket: {
+    visible: boolean;
+    description: string;
+    name: string;
+    status: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
+
+export type EditTicketVariables = {
+  putTicketOrganisationId: string;
+  putTicketBoardId: string;
+  putTicketInput: {
+    description: string;
+    name: string;
+    visible: boolean;
+    status: ticketStatusEnum;
+  };
+  putTicketTicketId: string;
 };
